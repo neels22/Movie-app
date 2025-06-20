@@ -14,8 +14,12 @@ const useFetch = <T>(fetchFunction: () => Promise<T>,autofetch: boolean = true) 
             setData(data);
         }
         catch(error){
-            //@ts-ignore
-            setError(error as string);
+            console.error('useFetch error:', error);
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError(String(error));
+            }
         }
         finally{
             setLoading(false);

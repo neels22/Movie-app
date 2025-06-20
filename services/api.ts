@@ -20,23 +20,33 @@ export const TMDB_CONFIG = {
         accept: 'application/json',
         Authorization: `Bearer ${process.env.EXPO_PUBLIC_TMDB_API_KEY}`,
     },
-   
 }
 
 
 export const fetchMovies = async ({query}:{query: string}) => {
     const endpoint = query ? `search/movie?query=${encodeURIComponent(query)}` : "discover/movie?sort_by=popularity.desc";
     const url = `${TMDB_CONFIG.BASE_URL}/${endpoint}`;
+    
+    // Debug logging
+    // console.log('API Key:', TMDB_CONFIG.API_KEY ? 'Set' : 'Not set');
+    // console.log('Request URL:', url);
+    // console.log('Request headers:', TMDB_CONFIG.headers);
+    
     const options = {
         method: 'GET',
         headers: TMDB_CONFIG.headers,
     };
+    
     const response = await fetch(url, options);
+    // console.log('Response status:', response.status);
+    // console.log('Response headers:', response.headers);
+    
     if (!response.ok) {
-        throw new Error(`Failed to fetch movies: ${response.statusText}`);
+        const errorText = await response.text();
+        // console.log('Error response body:', errorText);
+        throw new Error(`Failed to fetch movies: ${response.status} ${response.statusText}`);
     }
     const data = await response.json();
+    // console.log('Success response:', data);
     return data.results;
-
-
 }
