@@ -27,10 +27,8 @@ export const fetchMovies = async ({query}:{query: string}) => {
     const endpoint = query ? `search/movie?query=${encodeURIComponent(query)}` : "discover/movie?sort_by=popularity.desc";
     const url = `${TMDB_CONFIG.BASE_URL}/${endpoint}`;
     
-    // Debug logging
-    // console.log('API Key:', TMDB_CONFIG.API_KEY ? 'Set' : 'Not set');
-    // console.log('Request URL:', url);
-    // console.log('Request headers:', TMDB_CONFIG.headers);
+    console.log('API Key:', TMDB_CONFIG.API_KEY ? 'Set' : 'Not set');
+    console.log('Request URL:', url);
     
     const options = {
         method: 'GET',
@@ -38,15 +36,38 @@ export const fetchMovies = async ({query}:{query: string}) => {
     };
     
     const response = await fetch(url, options);
-    // console.log('Response status:', response.status);
-    // console.log('Response headers:', response.headers);
+    console.log('Response status:', response.status);
     
     if (!response.ok) {
         const errorText = await response.text();
-        // console.log('Error response body:', errorText);
+        console.log('Error response body:', errorText);
         throw new Error(`Failed to fetch movies: ${response.status} ${response.statusText}`);
     }
     const data = await response.json();
-    // console.log('Success response:', data);
+    console.log('Success response:', data);
     return data.results;
 }
+
+export const fetchMovieDetails = async (
+    movieId: string
+  ): Promise<MovieDetails> => {
+    try {
+      const response = await fetch(
+        `${TMDB_CONFIG.BASE_URL}/movie/${movieId}`,
+        {
+          method: "GET",
+          headers: TMDB_CONFIG.headers,
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error(`Failed to fetch movie details: ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching movie details:", error);
+      throw error;
+    }
+  };
